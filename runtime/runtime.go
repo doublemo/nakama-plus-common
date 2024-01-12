@@ -1157,7 +1157,7 @@ type NakamaModule interface {
 
 	GetSatori() Satori
 
-	SendPeerBroadcast(ctx context.Context, command int32, msg []byte, md map[string]string) error
+	SendPeerBroadcast(ctx context.Context, command int32, msg []byte, md map[string]string, subjects ...string) error
 	SessionToken(tk string) (userID string, username string, vars map[string]string, exp int64, online bool, err error)
 }
 
