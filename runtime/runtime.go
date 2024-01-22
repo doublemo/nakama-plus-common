@@ -850,7 +850,7 @@ type Initializer interface {
 	RegisterStorageIndexFilter(indexName string, fn func(ctx context.Context, logger Logger, db *sql.DB, nk NakamaModule, write *StorageWrite) bool) error
 
 	// RegisterPeerBroadcastFunction Peer broadcast
-	RegisterPeerBroadcastFunction(fn func(context.Context, Logger, *sql.DB, NakamaModule, int32, []byte, map[string]string, func(msg []byte) error, func(acked bool) error)) error
+	RegisterPeerBroadcastFunction(fn func(context.Context, Logger, *sql.DB, NakamaModule, []byte, func(msg []byte) error)) error
 }
 
 type PresenceReason uint8
@@ -1157,7 +1157,7 @@ type NakamaModule interface {
 
 	GetSatori() Satori
 
-	SendPeerBroadcast(ctx context.Context, command int32, msg []byte, md map[string]string, subjects ...string) error
+	SendPeerBroadcast(ctx context.Context, msg []byte) error
 	SessionToken(tk string) (userID string, username string, vars map[string]string, exp int64, online bool, err error)
 }
 
