@@ -848,9 +848,6 @@ type Initializer interface {
 
 	// RegisterStorageIndexFilter can be used to define a filtering function for a given storage index.
 	RegisterStorageIndexFilter(indexName string, fn func(ctx context.Context, logger Logger, db *sql.DB, nk NakamaModule, write *StorageWrite) bool) error
-
-	// RegisterPeerBroadcastFunction Peer broadcast
-	RegisterPeerBroadcastFunction(fn func(context.Context, Logger, *sql.DB, NakamaModule, []byte, func(msg []byte) error)) error
 }
 
 type PresenceReason uint8
@@ -1156,9 +1153,6 @@ type NakamaModule interface {
 	ChannelMessagesList(ctx context.Context, channelId string, limit int, forward bool, cursor string) (messages []*api.ChannelMessage, nextCursor string, prevCursor string, err error)
 
 	GetSatori() Satori
-
-	SendPeerBroadcast(ctx context.Context, msg []byte) error
-	SessionToken(tk string) (userID string, username string, vars map[string]string, exp int64, online bool, err error)
 }
 
 /*
