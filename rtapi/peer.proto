@@ -30,6 +30,7 @@ message NakamaPeer {
             Presence track = 10;
             Untrack untrack = 11;
             Envelope broadcast = 12;
+            Presence trackUpdate = 13;
         }
     }
 
@@ -43,9 +44,10 @@ message NakamaPeer {
         repeated string recipient = 1;
         uint32 reason = 2;
         map<string, string> context = 3;
+        bool IsSessionID = 4;
         oneof payload {
-            realtime.Envelope nakamaEnvelope = 4;
-            bytes bytes = 5;
+            realtime.Envelope nakamaEnvelope = 5;
+            bytes bytes = 6;
         }
     }
 
@@ -55,6 +57,7 @@ message NakamaPeer {
         repeated PresenceStream  stream = 3;
         repeated uint32 modes = 4;
         uint32 reason = 5;  
+        PresenceStream skipStream = 6;
     }
 
     message Status {
