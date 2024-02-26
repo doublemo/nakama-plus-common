@@ -12,5 +12,6 @@ type (
 		Broadcast(msg *rtapi.NakamaPeer_Frame, reliable, includeSelf bool)
 		Call(ctx context.Context, node string, msg *rtapi.NakamaPeer_Frame) (*rtapi.NakamaPeer_Frame, error)
 		SessionToken(tk string) (userID, username string, vars map[string]string, exp int64, online bool, err error)
+		GetServicesByRole(role string) []*rtapi.NakamaPeer_NodeMeta
 	}
 )
