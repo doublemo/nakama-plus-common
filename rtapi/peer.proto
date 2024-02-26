@@ -35,6 +35,16 @@ message NakamaPeer {
             Untrack untrack = 11;
             Envelope broadcast = 12;
             Presence trackUpdate = 13;
+            Party.Join partyJoin = 14;
+            Party.Promote partyPromote = 15;
+            Party.Accept partyAccept = 16;
+            Party.Remove partyRemove = 17;
+            Party.Close partyClose = 18;
+            Party.JoinRequestList partyJoinRequestList = 19;
+            Party.MatchmakerAdd partyMatchmakerAdd = 20;
+            Party.MatchmakerRemove partyMatchmakerRemove = 21;
+            Party.DataSend partyDataSend = 22;
+            Party.Result  partyResult = 23;
         }
     }
 
@@ -77,6 +87,11 @@ message NakamaPeer {
         double avgOutputKbs = 10;
     }
 
+    message PresenceID {
+        string sessionID = 1;
+        string node = 2;
+    }
+
     message Presence {
         string sessionID = 1;
         string userID = 2;
@@ -107,5 +122,74 @@ message NakamaPeer {
         string ip = 3;
         uint32 port = 4;
         string role = 5;
+    }
+
+    message Party {
+        message Join {
+            string id = 1;
+            string sessionID = 2;
+            string userID = 3;
+            PresenceStream stream = 4;
+            PresenceMeta meta = 5;
+        }
+
+        message Promote {
+            realtime.UserPresence presence = 1;
+            string sessionID = 2;
+            string id = 3;
+        }
+
+        message Accept{
+            realtime.UserPresence presence = 1;
+            string sessionID = 2;
+            string id = 3;
+        }
+        message Remove{
+            realtime.UserPresence presence = 1;
+            string sessionID = 2;
+            string id = 3;
+        }
+
+        message Close{
+            string sessionID = 1;
+            string id = 2;
+        }
+
+        message JoinRequestList{
+            string sessionID = 1;
+            string id = 2;
+        }
+
+        message MatchmakerAdd{
+            string sessionID = 1;
+            string id = 2;
+            string query = 3;
+            int32 minCount = 4;
+            int32 maxCount = 5;
+            int32 countMultiple = 6;
+            map<string, string> stringProperties = 7;
+            map<string, double> numericProperties = 8;
+        }
+        message MatchmakerRemove{
+            string sessionID = 1;
+            string id = 2;
+            string ticket = 3;
+        }
+
+        message DataSend{
+            string sessionID = 1;
+            string id = 2;
+            int64 opCode = 3;
+            bytes data = 4;
+        }
+        
+        message Result {
+            int32 code = 1;
+            bool ok = 2;
+            string errMsg = 3;
+            repeated realtime.UserPresence userPresence = 4;
+            string stringValue = 5;
+            repeated PresenceID presenceID = 6;
+        }
     }
 }
