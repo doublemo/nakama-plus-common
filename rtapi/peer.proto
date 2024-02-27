@@ -16,7 +16,7 @@ option csharp_namespace = "Nakama.Protobuf";
 
 service NakamaPeerApi {
     rpc Call(NakamaPeer.Envelope) returns(NakamaPeer.Envelope);
-    rpc Stream(NakamaPeer.Envelope) returns(NakamaPeer.Envelope);
+    rpc Stream(stream NakamaPeer.Envelope) returns(stream NakamaPeer.Envelope);
 }
 
 message NakamaPeer {

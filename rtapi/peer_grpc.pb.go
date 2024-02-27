@@ -28,7 +28,7 @@ const (
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type NakamaPeerApiClient interface {
 	Call(ctx context.Context, in *NakamaPeer_Envelope, opts ...grpc.CallOption) (*NakamaPeer_Envelope, error)
-	Stream(ctx context.Context, in *NakamaPeer_Envelope, opts ...grpc.CallOption) (*NakamaPeer_Envelope, error)
+	Stream(ctx context.Context, opts ...grpc.CallOption) (NakamaPeerApi_StreamClient, error)
 }
 
 type nakamaPeerApiClient struct {
@@ -48,13 +48,35 @@ func (c *nakamaPeerApiClient) Call(ctx context.Context, in *NakamaPeer_Envelope,
 	return out, nil
 }
 
-func (c *nakamaPeerApiClient) Stream(ctx context.Context, in *NakamaPeer_Envelope, opts ...grpc.CallOption) (*NakamaPeer_Envelope, error) {
-	out := new(NakamaPeer_Envelope)
-	err := c.cc.Invoke(ctx, NakamaPeerApi_Stream_FullMethodName, in, out, opts...)
+func (c *nakamaPeerApiClient) Stream(ctx context.Context, opts ...grpc.CallOption) (NakamaPeerApi_StreamClient, error) {
+	stream, err := c.cc.NewStream(ctx, &NakamaPeerApi_ServiceDesc.Streams[0], NakamaPeerApi_Stream_FullMethodName, opts...)
 	if err != nil {
 		return nil, err
 	}
-	return out, nil
+	x := &nakamaPeerApiStreamClient{stream}
+	return x, nil
+}
+
+type NakamaPeerApi_StreamClient interface {
+	Send(*NakamaPeer_Envelope) error
+	Recv() (*NakamaPeer_Envelope, error)
+	grpc.ClientStream
+}
+
+type nakamaPeerApiStreamClient struct {
+	grpc.ClientStream
+}
+
+func (x *nakamaPeerApiStreamClient) Send(m *NakamaPeer_Envelope) error {
+	return x.ClientStream.SendMsg(m)
+}
+
+func (x *nakamaPeerApiStreamClient) Recv() (*NakamaPeer_Envelope, error) {
+	m := new(NakamaPeer_Envelope)
+	if err := x.ClientStream.RecvMsg(m); err != nil {
+		return nil, err
+	}
+	return m, nil
 }
 
 // NakamaPeerApiServer is the server API for NakamaPeerApi service.
@@ -62,7 +84,7 @@ func (c *nakamaPeerApiClient) Stream(ctx context.Context, in *NakamaPeer_Envelop
 // for forward compatibility
 type NakamaPeerApiServer interface {
 	Call(context.Context, *NakamaPeer_Envelope) (*NakamaPeer_Envelope, error)
-	Stream(context.Context, *NakamaPeer_Envelope) (*NakamaPeer_Envelope, error)
+	Stream(NakamaPeerApi_StreamServer) error
 	mustEmbedUnimplementedNakamaPeerApiServer()
 }
 
@@ -73,8 +95,8 @@ type UnimplementedNakamaPeerApiServer struct {
 func (UnimplementedNakamaPeerApiServer) Call(context.Context, *NakamaPeer_Envelope) (*NakamaPeer_Envelope, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Call not implemented")
 }
-func (UnimplementedNakamaPeerApiServer) Stream(context.Context, *NakamaPeer_Envelope) (*NakamaPeer_Envelope, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method Stream not implemented")
+func (UnimplementedNakamaPeerApiServer) Stream(NakamaPeerApi_StreamServer) error {
+	return status.Errorf(codes.Unimplemented, "method Stream not implemented")
 }
 func (UnimplementedNakamaPeerApiServer) mustEmbedUnimplementedNakamaPeerApiServer() {}
 
@@ -107,22 +129,30 @@ func _NakamaPeerApi_Call_Handler(srv interface{}, ctx context.Context, dec func(
 	return interceptor(ctx, in, info, handler)
 }
 
-func _NakamaPeerApi_Stream_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(NakamaPeer_Envelope)
-	if err := dec(in); err != nil {
+func _NakamaPeerApi_Stream_Handler(srv interface{}, stream grpc.ServerStream) error {
+	return srv.(NakamaPeerApiServer).Stream(&nakamaPeerApiStreamServer{stream})
+}
+
+type NakamaPeerApi_StreamServer interface {
+	Send(*NakamaPeer_Envelope) error
+	Recv() (*NakamaPeer_Envelope, error)
+	grpc.ServerStream
+}
+
+type nakamaPeerApiStreamServer struct {
+	grpc.ServerStream
+}
+
+func (x *nakamaPeerApiStreamServer) Send(m *NakamaPeer_Envelope) error {
+	return x.ServerStream.SendMsg(m)
+}
+
+func (x *nakamaPeerApiStreamServer) Recv() (*NakamaPeer_Envelope, error) {
+	m := new(NakamaPeer_Envelope)
+	if err := x.ServerStream.RecvMsg(m); err != nil {
 		return nil, err
 	}
-	if interceptor == nil {
-		return srv.(NakamaPeerApiServer).Stream(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: NakamaPeerApi_Stream_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(NakamaPeerApiServer).Stream(ctx, req.(*NakamaPeer_Envelope))
-	}
-	return interceptor(ctx, in, info, handler)
+	return m, nil
 }
 
 // NakamaPeerApi_ServiceDesc is the grpc.ServiceDesc for NakamaPeerApi service.
@@ -136,11 +166,14 @@ var NakamaPeerApi_ServiceDesc = grpc.ServiceDesc{
 			MethodName: "Call",
 			Handler:    _NakamaPeerApi_Call_Handler,
 		},
+	},
+	Streams: []grpc.StreamDesc{
 		{
-			MethodName: "Stream",
-			Handler:    _NakamaPeerApi_Stream_Handler,
+			StreamName:    "Stream",
+			Handler:       _NakamaPeerApi_Stream_Handler,
+			ServerStreams: true,
+			ClientStreams: true,
 		},
 	},
-	Streams:  []grpc.StreamDesc{},
 	Metadata: "peer.proto",
 }
