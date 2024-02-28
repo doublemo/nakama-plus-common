@@ -48,6 +48,7 @@ message NakamaPeer {
             Match.Join matchJoin = 24;
             Match.JoinResult matchJoinResult = 25;
             Match.SendData matchDataSend = 26;
+            Envelope serviceBroadcast = 27;
         }
     }
 
