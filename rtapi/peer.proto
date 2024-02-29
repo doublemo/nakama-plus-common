@@ -126,6 +126,7 @@ message NakamaPeer {
         string ip = 3;
         uint32 port = 4;
         string role = 5;
+        bool isNew = 6;
     }
 
     message Party {
