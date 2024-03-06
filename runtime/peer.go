@@ -22,5 +22,6 @@ type (
 		SessionToken(tk string) (userID, username string, vars map[string]string, exp int64, online bool, err error)
 		GetServicesByRole(role string) []PeerService
 		GetServicesByRoleAndName(role, name string) (PeerService, bool)
+		GetServices() map[string]map[string]PeerService
 	}
 )
