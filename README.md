@@ -51,7 +51,7 @@ To use the Go language with your Nakama server project you compile your code as 
 3. Add this package as a dependency to the project and vendor it.
 
    ```shell
-   go get -u "https://github.com/doublemo/nakama-plus-common/runtime"
+   go get -u "github.com/doublemo/nakama-plus-common/runtime"
    go mod vendor
    ```
 
