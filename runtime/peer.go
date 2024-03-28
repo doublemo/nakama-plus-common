@@ -3,7 +3,7 @@ package runtime
 import (
 	"context"
 
-	"github.com/doublemo/nakama-plus-common/rtapi"
+	"github.com/heroiclabs/nakama-common/rtapi"
 )
 
 type (

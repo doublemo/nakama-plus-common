@@ -1,4 +1,4 @@
-module github.com/doublemo/nakama-plus-common
+module github.com/heroiclabs/nakama-common
 
 go 1.19
 
