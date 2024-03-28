@@ -23,6 +23,7 @@ To build the codebase and generate all sources use these steps.
 
    ```shell
    go install "google.golang.org/protobuf/cmd/protoc-gen-go"
+   go install "google.golang.org/grpc/cmd/protoc-gen-go-grpc"
    ```
 
 3. Use the Go generate command to generate all Go stubs.
@@ -50,7 +51,7 @@ To use the Go language with your Nakama server project you compile your code as 
 3. Add this package as a dependency to the project and vendor it.
 
    ```shell
-   go get -u "github.com/heroiclabs/nakama-common/runtime"
+   go get -u "https://github.com/doublemo/nakama-plus-common/runtime"
    go mod vendor
    ```
 
