@@ -24,36 +24,35 @@ It offers the same capabilities as the Lua runtime support but has the advantage
 
 Here's the smallest example of a Go module written with the server runtime.
 
-	package main
+		package main
 
-	import (
-		"context"
-		"database/sql"
-		"log"
+		import (
+			"context"
+			"database/sql"
+			"log"
+	        "github.com/doublemo/nakama-plus-common/runtime"
+		)
 
-		"github.com/heroiclabs/nakama-common/runtime"
-	)
-
-	func InitModule(ctx context.Context, logger Logger, db *sql.DB, nk runtime.NakamaModule, initializer runtime.Initializer) error {
-		if err := initializer.RegisterRpc("get_time", getServerTime); err != nil {
-			return err
-		}
-		logger.Println("module loaded")
-		return nil
-	}
-
-	func getServerTime(ctx context.Context, logger Logger, db *sql.DB, nk runtime.NakamaModule, payload string) (string, error) {
-		serverTime := map[string]int64 {
-			"time": time.Now().UTC().Unix(),
+		func InitModule(ctx context.Context, logger Logger, db *sql.DB, nk runtime.NakamaModule, initializer runtime.Initializer) error {
+			if err := initializer.RegisterRpc("get_time", getServerTime); err != nil {
+				return err
+			}
+			logger.Println("module loaded")
+			return nil
 		}
 
-		response, err := json.Marshal(serverTime)
-		if err != nil {
-			logger.Printf("failed to marshal response: %v", response)
-			return "", errors.New("internal error; see logs")
+		func getServerTime(ctx context.Context, logger Logger, db *sql.DB, nk runtime.NakamaModule, payload string) (string, error) {
+			serverTime := map[string]int64 {
+				"time": time.Now().UTC().Unix(),
+			}
+
+			response, err := json.Marshal(serverTime)
+			if err != nil {
+				logger.Printf("failed to marshal response: %v", response)
+				return "", errors.New("internal error; see logs")
+			}
+			return string(response), nil
 		}
-		return string(response), nil
-	}
 
 On server start, Nakama scans the module directory folder (https://heroiclabs.com/docs/runtime-code-basics/#load-modules).
 If it finds a shared object file (*.so), it attempts to open the file as a plugin and initialize it by running the InitModule function.
@@ -62,8 +61,8 @@ This function is guaranteed to ever be invoked once during the uptime of the ser
 To setup your own project to build modules for the game server you can follow these steps.
 
  1. Build Nakama from source:
-    go get -d github.com/heroiclabs/nakama-common
-    cd $GOPATH/src/github.com/heroiclabs/nakama-common
+    go get -d github.com/doublemo/nakama-plus-common
+    cd $GOPATH/src/github.com/doublemo/nakama-plus-common
     env CGO_ENABLED=1 go build
 
  2. Setup a folder for your own server code:
@@ -76,7 +75,7 @@ To setup your own project to build modules for the game server you can follow th
 NOTE: It is not possible to build plugins on Windows with the native compiler toolchain but they can be cross-compiled and run with Docker.
 
  4. Start Nakama with your module:
-    $GOPATH/src/github.com/heroiclabs/nakama-common/nakama --runtime.path $GOPATH/src/plugin_project/modules
+    $GOPATH/src/github.com/doublemo/nakama-plus-common/nakama --runtime.path $GOPATH/src/plugin_project/modules
 
 TIP: You don't have to install Nakama from source but you still need to have the `api`, `rtapi` and `runtime` packages from Nakama on your `GOPATH`. Heroic Labs also offers a docker plugin-builder image that streamlines the plugin workflow.
 
