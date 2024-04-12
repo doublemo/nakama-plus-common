@@ -23,6 +23,6 @@ type (
 		GetServicesByRole(role string) []PeerService
 		GetServicesByRoleAndName(role, name string) (PeerService, bool)
 		GetServices() map[string]map[string]PeerService
-		GetServiceByHashRing(role string)
+		GetServiceByHashRing(role, key string)
 	}
 )
